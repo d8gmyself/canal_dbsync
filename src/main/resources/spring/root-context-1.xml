@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd">
+
+    <bean name="instance" class="com.d8gmyself.dbsync.etl.SETLInstanceWithSpring">
+        <property name="selectTask" ref="selectTask"/>
+        <property name="extractTask" ref="extractTask"/>
+        <property name="transformTask" ref="transformTask"/>
+        <property name="loadTask" ref="loadTask"/>
+    </bean>
+
+    <bean name="pipeline" class="com.d8gmyself.dbsync.commons.config.PipelineConfig" factory-method="getPipelineById">
+        <constructor-arg type="java.lang.Long" value="1"/>
+    </bean>
+
+    <bean name="executorService" class="java.util.concurrent.Executors" factory-method="newFixedThreadPool">
+        <constructor-arg value="8"/>
+    </bean>
+
+    <bean name="processIdGenerator" class="com.d8gmyself.dbsync.arbitrate.ProcessIdGenerator"/>
+
+    <bean name="arbitrateEventService" class="com.d8gmyself.dbsync.arbitrate.impl.DefaultArbitrateEventServiceImpl"/>
+
+    <bean id="selector" class="com.d8gmyself.dbsync.etl.select.selector.impl.DefaultSelectorImpl">
+        <constructor-arg type="com.d8gmyself.dbsync.commons.model.Pipeline" ref="pipeline"/>
+    </bean>
+
+    <bean name="selectTask" class="com.d8gmyself.dbsync.etl.select.SelectTask">
+        <constructor-arg index="0" type="com.d8gmyself.dbsync.arbitrate.ArbitrateEventService" ref="arbitrateEventService"/>
+        <constructor-arg index="1" type="com.d8gmyself.dbsync.etl.select.selector.Selector" ref="selector"/>
+        <property name="pipeline" ref="pipeline"/>
+        <property name="executorService" ref="executorService"/>
+        <property name="processIdGenerator" ref="processIdGenerator"/>
+        <property name="pipelineId">
+            <bean factory-bean="pipeline" factory-method="getId"/>
+        </property>
+    </bean>
+
+    <bean id="extractor" class="com.d8gmyself.dbsync.etl.extract.extractor.impl.DefaultExtractorImpl"/>
+
+    <bean name="extractTask" class="com.d8gmyself.dbsync.etl.extract.ExtractTask">
+        <constructor-arg index="0" type="com.d8gmyself.dbsync.arbitrate.ArbitrateEventService" ref="arbitrateEventService"/>
+        <constructor-arg index="1" type="com.d8gmyself.dbsync.etl.extract.extractor.Extractor" ref="extractor"/>
+        <property name="pipeline" ref="pipeline"/>
+        <property name="executorService" ref="executorService"/>
+        <property name="processIdGenerator" ref="processIdGenerator"/>
+        <property name="pipelineId">
+            <bean factory-bean="pipeline" factory-method="getId"/>
+        </property>
+
+    </bean>
+
+    <bean id="transformer" class="com.d8gmyself.dbsync.etl.transform.transformer.impl.DefaultTransformer">
+        <constructor-arg type="com.d8gmyself.dbsync.commons.model.Pipeline" ref="pipeline"/>
+    </bean>
+
+    <bean name="transformTask" class="com.d8gmyself.dbsync.etl.transform.TransformTask">
+        <constructor-arg index="0" type="com.d8gmyself.dbsync.arbitrate.ArbitrateEventService" ref="arbitrateEventService"/>
+        <constructor-arg index="1" type="com.d8gmyself.dbsync.etl.transform.transformer.Transformer" ref="transformer"/>
+        <property name="pipeline" ref="pipeline"/>
+        <property name="executorService" ref="executorService"/>
+        <property name="processIdGenerator" ref="processIdGenerator"/>
+        <property name="pipelineId">
+            <bean factory-bean="pipeline" factory-method="getId"/>
+        </property>
+    </bean>
+
+    <bean id="loader" class="com.d8gmyself.dbsync.etl.load.loader.impl.DefaultLoder"/>
+
+    <bean name="loadTask" class="com.d8gmyself.dbsync.etl.load.LoadTask">
+        <constructor-arg index="0" type="com.d8gmyself.dbsync.arbitrate.ArbitrateEventService" ref="arbitrateEventService"/>
+        <constructor-arg index="1" type="com.d8gmyself.dbsync.etl.load.loader.Loader" ref="loader"/>
+        <property name="pipeline" ref="pipeline"/>
+        <property name="executorService" ref="executorService"/>
+        <property name="processIdGenerator" ref="processIdGenerator"/>
+        <property name="pipelineId">
+            <bean factory-bean="pipeline" factory-method="getId"/>
+        </property>
+    </bean>
+
+</beans>

@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <!-- dataSource -->
+    <bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+        <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
+        <property name="url" value="${jdbc.url}"/>
+        <property name="username" value="${jdbc.username}"/>
+        <property name="password" value="${jdbc.password}"/>
+        <property name="maxActive" value="1000"/>
+        <!-- 最大连接数据库连接数 -->
+        <property name="timeBetweenEvictionRunsMillis" value="10000"/>
+        <!-- 每隔毫秒秒检查一次连接池中空闲的连接 -->
+        <property name="minEvictableIdleTimeMillis" value="10000"/>
+        <!-- 连接池中连接可空闲的时间,毫秒 -->
+        <property name="removeAbandoned" value="true"/>
+        <!-- 是否清理removeAbandonedTimeout秒没有使用的活动连接,清理后并没有放回连接池 -->
+        <property name="removeAbandonedTimeout" value="300"/>
+        <!-- 活动连接的最大空闲时间 -->
+        <property name="minIdle" value="5"/>
+        <!-- 最小空闲连接数 -->
+        <property name="maxWait" value="10"/>
+        <!-- 最大等待时间，当没有可用连接时，连接池等待连接释放的最大时间 -->
+        <property name="testOnBorrow" value="true"/>
+        <property name="validationQuery" value="SELECT 1"/>
+        <property name="logAbandoned" value="true"/>
+        <property name="testWhileIdle" value="true"/>
+        <property name="initialSize" value="1"/>
+    </bean>
+
+</beans>

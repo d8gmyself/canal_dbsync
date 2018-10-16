@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<mapping>
+    <!-- 同步配置，对应一个canal.destination -->
+    <pipeline id="1" zkServers="127.0.0.1:2181" destination="test"
+              canalUsername="" canalPassword="" parallelism="5" batchSize="10000">
+        <!-- 要同步的表，可以配置原库表和目标库表，可以配置原字段和目标字段，如果不配置，默认目标表字段兼容所有的原表字段 -->
+        <table id="1">
+            <src>database_name.table_name</src>
+            <target>database_name.table_name</target>
+            <fields>
+                <field src="column_name" target="column_name" />
+            </fields>
+        </table>
+        <table id="2">
+            <src>database_name.table_name</src>
+            <target>database_name.table_name</target>
+        </table>
+    </pipeline>
+</mapping>
