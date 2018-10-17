@@ -127,6 +127,8 @@
                     <charset>UTF-8</charset>
                     <docencoding>UTF-8</docencoding>
                     <encoding>UTF-8</encoding>
+                    <failOnError>false</failOnError>
+                    <ignoreClirr>true</ignoreClirr>
                 </configuration>
             </plugin>
             <plugin>
