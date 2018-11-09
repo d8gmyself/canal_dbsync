@@ -4,6 +4,7 @@ import com.alibaba.otter.canal.common.utils.BooleanMutex;
 import com.d8gmyself.core.eventbus.Subscribe;
 import com.d8gmyself.dbsync.arbitrate.ArbitrateEventService;
 import com.d8gmyself.dbsync.arbitrate.event.ETLEventData;
+import com.d8gmyself.dbsync.arbitrate.event.TerminArbitrateEvent;
 import com.d8gmyself.dbsync.arbitrate.event.TerminEventData;
 import com.d8gmyself.dbsync.etl.commons.GlobalTask;
 import com.d8gmyself.dbsync.etl.select.selector.Message;
@@ -119,10 +120,11 @@ public class SelectTask extends GlobalTask {
     /**
      * 响应结束信号，执行ack或rollback
      *
-     * @param terminEventData 结束事件
+     * @param terminArbitrateEvent 结束事件
      */
     @Subscribe(async = true)
-    public void processTermin(TerminEventData terminEventData) {
+    public void processTermin(TerminArbitrateEvent terminArbitrateEvent) {
+        TerminEventData terminEventData = terminArbitrateEvent.getData();
         if (terminEventData.getTerminType().isRollback()) { //回滚操作
             canSelector.set(false);
             rversion.incrementAndGet();
@@ -138,11 +140,11 @@ public class SelectTask extends GlobalTask {
                     log.info("ack process:{}, pipeline:{}", terminEventData.getProcessId(), pipelineId);
                 } else {
                     log.error("arbitrate error...");
-                    processTermin(new TerminEventData(terminEventData.getProcessId(), terminEventData.getBatchId(), TerminEventData.TerminType.ROLLBACK));
+                    arbitrateEventService.terminated(new TerminEventData(terminEventData.getProcessId(), terminEventData.getBatchId(), TerminEventData.TerminType.ROLLBACK));
                 }
             } catch (Exception e) {
                 log.error(e.getMessage(), e);
-                processTermin(new TerminEventData(terminEventData.getProcessId(), terminEventData.getBatchId(), TerminEventData.TerminType.ROLLBACK));
+                arbitrateEventService.terminated(new TerminEventData(terminEventData.getProcessId(), terminEventData.getBatchId(), TerminEventData.TerminType.ROLLBACK));
             }
         }
     }

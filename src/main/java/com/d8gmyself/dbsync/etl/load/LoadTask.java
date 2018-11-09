@@ -13,7 +13,6 @@ import com.google.common.base.Stopwatch;
 import com.google.common.collect.Lists;
 import org.apache.commons.collections.CollectionUtils;
 
-import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.*;
 
@@ -29,7 +28,7 @@ public class LoadTask extends GlobalTask {
 
     private Loader loader;
 
-    private PriorityBlockingQueue<ETLEventData> datas = new PriorityBlockingQueue<>(11, Comparator.comparingLong(ETLEventData::getProcessId));
+    private LinkedBlockingQueue<ETLEventData> datas = new LinkedBlockingQueue<>(11);
 
     private ExecutorService loadExecutor = Executors.newFixedThreadPool(5);
     private final Thread loadThread;
@@ -57,7 +56,6 @@ public class LoadTask extends GlobalTask {
             }
         });
         loadThread.setName("pipeline=" + pipelineId + ", task=loaded");
-        loadThread.start();
     }
 
     /**
@@ -120,6 +118,11 @@ public class LoadTask extends GlobalTask {
             loader.changeToSqls(eventDatas);
             loader.load(eventDatas);
         }
+    }
+
+    public void startup() {
+        this.running = true;
+        loadThread.start();
     }
 
     public void shutdown() {

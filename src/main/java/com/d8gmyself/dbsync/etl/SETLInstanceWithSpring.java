@@ -56,6 +56,7 @@ public class SETLInstanceWithSpring {
      */
     public void start() {
         this.selectTask.startup();
+        this.loadTask.startup();
     }
 
     /**

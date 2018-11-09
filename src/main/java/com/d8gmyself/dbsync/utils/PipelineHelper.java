@@ -3,6 +3,7 @@ package com.d8gmyself.dbsync.utils;
 import com.d8gmyself.dbsync.commons.model.DataMediaPair;
 import com.d8gmyself.dbsync.commons.model.Pipeline;
 
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -27,7 +28,7 @@ public class PipelineHelper {
      * @return 映射信息
      */
     public static List<DataMediaPair> getDataMediaPairBySchemaAndTable(Pipeline pipeline, String schema, String table) {
-        return pipeline.getDataMediaPairs().get(schema + "." + table);
+        return pipeline.getDataMediaPairs().getOrDefault(schema + "." + table, Collections.emptyList());
     }
 
 }
