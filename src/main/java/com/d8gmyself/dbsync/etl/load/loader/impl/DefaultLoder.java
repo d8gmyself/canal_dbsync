@@ -2,14 +2,19 @@ package com.d8gmyself.dbsync.etl.load.loader.impl;
 
 import com.d8gmyself.dbsync.etl.commons.model.EventColumn;
 import com.d8gmyself.dbsync.etl.commons.model.EventData;
+import com.d8gmyself.dbsync.etl.load.exception.LoadException;
 import com.d8gmyself.dbsync.etl.load.loader.Loader;
 import com.d8gmyself.dbsync.utils.BeanUtils;
+import com.d8gmyself.dbsync.utils.CloseableUtils;
 import com.google.common.base.Stopwatch;
 import com.google.common.collect.Lists;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.sql.DataSource;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.sql.Types;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -42,7 +47,7 @@ public class DefaultLoder implements Loader {
 
     @Override
     public boolean load(List<EventData> eventDatas) {
-        /*final Stopwatch stopwatch = Stopwatch.createStarted();
+        final Stopwatch stopwatch = Stopwatch.createStarted();
         Connection connection = null;
         Statement statement = null;
         try {
@@ -64,9 +69,7 @@ public class DefaultLoder implements Loader {
         } finally {
             CloseableUtils.close(statement);
             CloseableUtils.close(connection);
-        }*/
-        eventDatas.forEach(eventData -> System.out.println(eventData.getSql()));
-        return true;
+        }
     }
 
     private String getValue(EventColumn column) {
