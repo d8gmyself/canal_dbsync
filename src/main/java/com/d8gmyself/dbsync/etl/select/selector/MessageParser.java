@@ -32,7 +32,7 @@ public class MessageParser {
         long n = 0;
         try {
             for (CanalEntry.Entry entry : datas) {
-                if (entry.getEntryType() == CanalEntry.EntryType.ROWDATA && entry.getHeader().getEventType() != CanalEntry.EventType.DELETE) {
+                if (entry.getEntryType() == CanalEntry.EntryType.ROWDATA) {
                     final CanalEntry.RowChange rowChange = CanalEntry.RowChange.parseFrom(entry.getStoreValue());
                     EventData eventData = new EventData();
                     eventData.setTableName(entry.getHeader().getTableName());
